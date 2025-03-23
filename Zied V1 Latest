@@ -1,0 +1,344 @@
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local Camera = workspace.CurrentCamera
+
+-- Cinematic Effects
+local blur = Instance.new("BlurEffect", Lighting)
+blur.Size = 24  
+
+local bloom = Instance.new("BloomEffect", Lighting)
+bloom.Intensity = 1.5
+bloom.Size = 24
+bloom.Threshold = 0.8
+
+local colorCorrection = Instance.new("ColorCorrectionEffect", Lighting)
+colorCorrection.Saturation = -0.3
+colorCorrection.TintColor = Color3.new(1, 1, 0.6) -- Slightly yellow glow
+
+-- GUI Elements
+local loadingGui = Instance.new("ScreenGui")
+loadingGui.Name = "LoadingGUI"
+loadingGui.Parent = game.CoreGui
+loadingGui.ResetOnSpawn = false
+
+-- "Zied V1" Label
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "TitleLabel"
+titleLabel.Parent = loadingGui
+titleLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+titleLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+titleLabel.Size = UDim2.new(0, 400, 0, 100)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "Zied V1"
+titleLabel.Font = Enum.Font.FredokaOne
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  -- Neon Yellow
+titleLabel.TextSize = 100  
+titleLabel.TextStrokeTransparency = 0
+titleLabel.TextStrokeColor3 = Color3.fromRGB(255, 215, 0) -- Glow effect
+
+-- Crosshair Image
+local crosshair = Instance.new("ImageLabel")
+crosshair.Name = "Crosshair"
+crosshair.Parent = loadingGui
+crosshair.AnchorPoint = Vector2.new(0.5, 0.5)
+crosshair.Position = UDim2.new(0.62, 0, 0.5, 0) -- Positioned slightly to the right of the text
+crosshair.Size = UDim2.new(0, 100, 0, 100)
+crosshair.BackgroundTransparency = 1
+crosshair.Image = "rbxassetid://11270899870"  -- Replace with a custom crosshair if needed
+crosshair.ImageColor3 = Color3.fromRGB(255, 255, 0) -- Matches neon yellow glow
+crosshair.ImageTransparency = 1 -- Starts hidden
+
+-- Sound Effect
+local introSound = Instance.new("Sound")
+introSound.SoundId = "rbxassetid://1837635135"  -- Cinematic Whoosh (Replace if needed)
+introSound.Volume = 2
+introSound.Parent = titleLabel
+introSound:Play()
+
+-- Initial Tweening for Title
+local expandTween = TweenService:Create(titleLabel, TweenInfo.new(1, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0, 500, 0, 120),
+    TextTransparency = 0.2,
+})
+expandTween:Play()
+
+wait(0.3) -- Slight delay for effect
+
+local pulseTween = TweenService:Create(titleLabel, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, -1, true), {
+    TextSize = 110
+})
+pulseTween:Play()
+
+-- Crosshair Fade-In Animation
+local crosshairFadeIn = TweenService:Create(crosshair, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageTransparency = 0})
+crosshairFadeIn:Play()
+
+-- Camera Shake Effect
+local function CameraShake()
+    for i = 1, 10 do
+        Camera.CFrame = Camera.CFrame * CFrame.Angles(0, 0, math.rad(math.random(-1, 1)))
+        wait(0.03)
+    end
+end
+CameraShake()
+
+wait(1.5) -- Let animation play
+
+-- Distortion and Shrink Effect
+local shrinkTween = TweenService:Create(titleLabel, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+    Size = UDim2.new(0, 100, 0, 50),
+    TextTransparency = 1
+})
+shrinkTween:Play()
+
+local crosshairShrink = TweenService:Create(crosshair, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.In), {ImageTransparency = 1})
+crosshairShrink:Play()
+
+wait(1)
+
+-- "Made by Zied / JustNotZied | Discord" Label
+local MadeByLabel = Instance.new("TextLabel")
+MadeByLabel.Name = "MadeByLabel"
+MadeByLabel.Parent = loadingGui
+MadeByLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+MadeByLabel.Position = UDim2.new(0.5, 0, 0.7, 0)
+MadeByLabel.Size = UDim2.new(0, 400, 0, 50)
+MadeByLabel.BackgroundTransparency = 1
+MadeByLabel.Text = "Made by Zied / JustNotZied | Discord"
+MadeByLabel.Font = Enum.Font.GothamBold
+MadeByLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  -- Yellow Glow
+MadeByLabel.TextSize = 40
+MadeByLabel.TextStrokeTransparency = 0
+MadeByLabel.TextStrokeColor3 = Color3.fromRGB(255, 215, 0) -- Glow Effect
+MadeByLabel.TextTransparency = 1
+
+local fadeIn = TweenService:Create(MadeByLabel, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 0})
+fadeIn:Play()
+
+wait(3) -- Keep text for a while
+
+local fadeOut = TweenService:Create(MadeByLabel, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1})
+fadeOut:Play()
+
+fadeOut.Completed:Connect(function()
+    -- Clean up the GUI and effects
+    loadingGui:Destroy()
+    blur:Destroy()
+    bloom:Destroy()
+    colorCorrection:Destroy()
+
+local Config = {
+    CamlockSettings = {
+        Smoothness = 5,
+        MaxLockDistance = 1000,
+        AutoUnlockOnKill = true,
+        PredictionStrength = 0.1
+    },
+    PredictionDot = {
+        Enabled = true,
+        Color = Color3.fromRGB(255, 255, 0),       -- Bright neon yellow
+        Size = UDim2.new(0, 10, 0, 10),              -- Size of the dot in pixels
+        Image = "rbxassetid://3570695787",           -- Default round image asset
+        ImageTransparency = 0,                       -- Fully opaque image
+        StudsOffset = Vector3.new(0, 0, 0)            -- Offset above the target (adjust if needed)
+    },
+    UI = {
+        LockColor = Color3.fromRGB(255, 215, 0),
+        DefaultColor = Color3.fromRGB(30, 30, 30),
+        Size = UDim2.new(0, 80, 0, 80),
+        Position = UDim2.new(0.85, 0, 0.2, 0),
+        BorderColor = Color3.fromRGB(255, 255, 255),
+        BorderSize = 3
+    },
+    Display = {
+        Position = UDim2.new(0.1, 0, 0.06, 0),
+        Size = UDim2.new(0, 160, 0, 40),
+        Color = Color3.fromRGB(40, 40, 40)
+    }
+}
+
+-- Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+local CamlockEnabled = false
+local LockTarget = nil
+local PredictionDotPart = nil
+
+-- GUI Elements
+local LockGui = Instance.new("ScreenGui", game.CoreGui)
+
+-- Camlock Button
+local LockButton = Instance.new("TextButton", LockGui)
+LockButton.Size = Config.UI.Size
+LockButton.Position = Config.UI.Position
+LockButton.BackgroundColor3 = Config.UI.DefaultColor
+LockButton.Text = "⭐ Trendy X Zied ⭐"
+LockButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+LockButton.Font = Enum.Font.GothamBold
+LockButton.TextScaled = true
+LockButton.AutoButtonColor = false
+LockButton.Active = true
+LockButton.Draggable = true
+LockButton.ZIndex = 10
+LockButton.BorderSizePixel = Config.UI.BorderSize
+LockButton.BorderColor3 = Config.UI.BorderColor
+
+local Corner1 = Instance.new("UICorner", LockButton)
+Corner1.CornerRadius = UDim.new(0, 16)
+
+-- Display Frame for target info
+local DisplayFrame = Instance.new("Frame", LockGui)
+DisplayFrame.Size = Config.Display.Size
+DisplayFrame.Position = Config.Display.Position
+DisplayFrame.BackgroundColor3 = Config.Display.Color
+DisplayFrame.Visible = false
+
+local DisplayText = Instance.new("TextLabel", DisplayFrame)
+DisplayText.Size = UDim2.new(1, 0, 0.6, 0)
+DisplayText.BackgroundTransparency = 1
+DisplayText.TextColor3 = Color3.fromRGB(255, 255, 255)
+DisplayText.Font = Enum.Font.GothamBold
+DisplayText.TextScaled = true
+
+local CreatorText = Instance.new("TextLabel", DisplayFrame)
+CreatorText.Size = UDim2.new(1, 0, 0.4, 0)
+CreatorText.Position = UDim2.new(0, 0, 0.6, 0)
+CreatorText.BackgroundTransparency = 1
+CreatorText.TextColor3 = Color3.fromRGB(255, 255, 255)
+CreatorText.Font = Enum.Font.GothamBold
+CreatorText.TextScaled = true
+CreatorText.Text = "Made by JustNotZied | Discord"
+
+-- Function to create a neon, brighter prediction dot that appears through the target
+local function CreatePredictionDot(target)
+    if PredictionDotPart then
+        PredictionDotPart:Destroy()
+    end
+
+    if Config.PredictionDot.Enabled then
+        PredictionDotPart = Instance.new("Part")
+        PredictionDotPart.Size = Vector3.new(1, 1, 1)
+        PredictionDotPart.Transparency = 1
+        PredictionDotPart.Anchored = true
+        PredictionDotPart.CanCollide = false
+        PredictionDotPart.Name = "PredictionDotDummy"
+        PredictionDotPart.Parent = target.Parent
+
+        local dotGui = Instance.new("BillboardGui", PredictionDotPart)
+        dotGui.Name = "PredictionDotGui"
+        dotGui.AlwaysOnTop = true
+        dotGui.Size = Config.PredictionDot.Size
+        dotGui.StudsOffset = Config.PredictionDot.StudsOffset
+
+        local imageLabel = Instance.new("ImageLabel", dotGui)
+        imageLabel.Size = UDim2.new(1, 0, 1, 0)
+        imageLabel.BackgroundTransparency = 1
+        imageLabel.Image = Config.PredictionDot.Image
+        imageLabel.ImageColor3 = Config.PredictionDot.Color
+        imageLabel.ImageTransparency = Config.PredictionDot.ImageTransparency
+
+        PredictionDotPart.Position = target.Position
+    end
+end
+
+-- Function to get the target in sight
+local function GetTargetInSight()
+    local BestTarget = nil
+    local ShortestDistance = math.huge
+    local CameraDirection = Camera.CFrame.LookVector
+
+    for _, Player in pairs(Players:GetPlayers()) do
+        if Player ~= LocalPlayer and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+            local Root = Player.Character.HumanoidRootPart
+            local Distance = (Root.Position - Camera.CFrame.Position).Magnitude
+            local Direction = (Root.Position - Camera.CFrame.Position).Unit
+            local DotProduct = CameraDirection:Dot(Direction)
+
+            if Distance < Config.CamlockSettings.MaxLockDistance and DotProduct > 0.96 and Distance < ShortestDistance then
+                BestTarget = Root
+                ShortestDistance = Distance
+            end
+        end
+    end
+    return BestTarget
+end
+
+-- Toggle Camlock on button click
+LockButton.MouseButton1Click:Connect(function()
+    if CamlockEnabled then
+        CamlockEnabled = false
+        LockTarget = nil
+        LockButton.BackgroundColor3 = Config.UI.DefaultColor
+        LockButton.Text = "⭐ Trendy X Zied ⭐"
+        DisplayFrame.Visible = false
+        
+        if PredictionDotPart then
+            PredictionDotPart:Destroy()
+            PredictionDotPart = nil
+        end
+    else
+        LockTarget = GetTargetInSight()
+        if LockTarget then
+            CamlockEnabled = true
+            LockButton.BackgroundColor3 = Config.UI.LockColor
+            LockButton.Text = "⭐ LOCKED ⭐"
+            
+            local TargetPlayer = Players:GetPlayerFromCharacter(LockTarget.Parent)
+            if TargetPlayer then
+                DisplayText.Text = TargetPlayer.DisplayName
+                DisplayFrame.Visible = true
+            end
+
+            -- Create the neon prediction dot attached to the target's character
+            CreatePredictionDot(LockTarget)
+        end
+    end
+end)
+
+-- Update camera position and prediction dot position
+RunService.RenderStepped:Connect(function()
+    if CamlockEnabled and LockTarget and LockTarget.Parent then
+        local TargetPosition = LockTarget.Position + LockTarget.Velocity * Config.CamlockSettings.PredictionStrength
+        local TargetCFrame = CFrame.lookAt(Camera.CFrame.Position, TargetPosition)
+        Camera.CFrame = Camera.CFrame:Lerp(TargetCFrame, Config.CamlockSettings.Smoothness * 0.1)
+        
+        if PredictionDotPart then
+            PredictionDotPart.Position = TargetPosition
+        end
+    end
+end)
+
+-- Auto-unlock on player death
+LocalPlayer.CharacterAdded:Connect(function(Char)
+    local Humanoid = Char:FindFirstChild("Humanoid")
+    if Humanoid then
+        Humanoid.Died:Connect(function()
+            if Config.CamlockSettings.AutoUnlockOnKill then
+                CamlockEnabled = false
+                LockButton.BackgroundColor3 = Config.UI.DefaultColor
+                LockButton.Text = "⭐ Trendy X Zied ⭐"
+                LockTarget = nil
+                DisplayFrame.Visible = false
+                
+                if PredictionDotPart then
+                    PredictionDotPart:Destroy()
+                    PredictionDotPart = nil
+                end
+            end
+        end)
+    end
+end)
+
+    print("Intro completed. Your code is now running!")
+
+    -- Example code to run after the intro:
+    local part = Instance.new("Part")
+    part.Size = Vector3.new(4, 1, 4)
+    part.Position = Vector3.new(0, 10, 0)
+    part.Anchored = true
+    part.Parent = workspace
+end)
